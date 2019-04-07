@@ -6,15 +6,18 @@ from plotly.offline import plot
 import numpy as np
 from nptyping import Array
 
+# Constants
+PLACE = ['First', 'Second', 'Thrid', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth']
+NUM = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'All']
+COLOR = cl.scales['8']['div']['RdYlGn']
+COLOR.reverse()
+
 # Make a bar chart with the provided data
 def bar_chart(input: Array[int,8,8], all_mmr: Array[int, 8]):
     x = np.array([mmr_to_rank(mmr) for mmr in all_mmr])
-    places = ['First', 'Second', 'Thrid', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth']
-    colors = cl.scales['8']['div']['RdYlGn']
-    colors.reverse()
 
     title, filename = title_and_filename(x)
-    data = [go.Bar(x=x, y=y, name=places[i], marker={'color': colors[i]}) for i,y in enumerate(input.T)]
+    data = [go.Bar(x=x, y=y, text=y,textposition='auto', name=PLACE[i], marker={'color': COLOR[i]}) for i,y in enumerate(input.T)]
     layout = go.Layout(
         barmode='group',
         title=title,
@@ -28,7 +31,7 @@ def bar_chart(input: Array[int,8,8], all_mmr: Array[int, 8]):
 # Convert mmr to rank
 def mmr_to_rank(mmr: int) -> str:
     mmr_level = int((mmr - 340) / 80)
-    
+
     if mmr_level == 37:
         return "King"
     if mmr_level == 38:
@@ -42,14 +45,13 @@ def mmr_to_rank(mmr: int) -> str:
 
 # Generate a title and filename based on the ranks
 def title_and_filename(ranks: Array[str, 8]) -> (str, str):
-    numbers = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight']
     unique, counts = np.unique(ranks, return_counts=True)
 
     title = ''
     filename = ''
     for rank, count in zip(unique, counts):
-        title = title + "{count} {rank}, ".format(count=numbers[count-1], rank=rank)
-        filename = filename + "{count}_{rank}_".format(count=numbers[count-1], rank=rank[0]+rank[-1])
+        title = title + "{count} {rank}, ".format(count=NUM[count-1], rank=rank)
+        filename = filename + "{count}_{rank}_".format(count=NUM[count-1], rank=rank[0]+rank[-1])
 
     # Remove extra , and _. Format filename
     title = title[:-2]

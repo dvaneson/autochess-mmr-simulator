@@ -5,10 +5,11 @@ import numpy as np
 def main():
     print('Getting mmr')
     all_mmr = np.loadtxt('input.txt')
-    data = all_placements(all_mmr)
+    for row in all_mmr:
+        data = all_placements(row)
 
-    print('Making graph')
-    bar_chart(data, all_mmr)
+        print(f"Making graph for {row}")
+        bar_chart(data, row)
 
 if __name__ == '__main__':
     main()
