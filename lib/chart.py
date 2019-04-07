@@ -30,6 +30,9 @@ def bar_chart(input: Array[int,8,8], all_mmr: Array[int, 8]):
 
 # Convert mmr to rank
 def mmr_to_rank(mmr: int) -> str:
+    if mmr < 500:
+        return "Pawn-1"
+        
     mmr_level = int((mmr - 340) / 80)
 
     if mmr_level == 37:
@@ -46,12 +49,19 @@ def mmr_to_rank(mmr: int) -> str:
 # Generate a title and filename based on the ranks
 def title_and_filename(ranks: Array[str, 8]) -> (str, str):
     unique, counts = np.unique(ranks, return_counts=True)
+    # Handle differently if one of each rank
+    if unique.size == ranks.size:
+        bottom = unique[0]
+        top = unique[-1]
+        title = f"{bottom} to {top}"
+        filename = f"graphs/{bottom[0]}{bottom[-1]}_to_{top[0]}{top[-1]}.html"
+        return title, filename
 
     title = ''
     filename = ''
     for rank, count in zip(unique, counts):
-        title = title + "{count} {rank}, ".format(count=NUM[count-1], rank=rank)
-        filename = filename + "{count}_{rank}_".format(count=NUM[count-1], rank=rank[0]+rank[-1])
+        title = title + f"{NUM[count-1]} {rank}, "
+        filename = filename + f"{NUM[count-1]}_{rank[0]+rank[-1]}_"
 
     # Remove extra , and _. Format filename
     title = title[:-2]
